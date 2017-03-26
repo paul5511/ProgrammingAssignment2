@@ -1,15 +1,42 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Function wrappers to aid in the calculation of a matrix, caching the matrix where possible.
 
-## Write a short comment describing this function
+## Returns a list of functions to get/set the matrix and inverse matrix. Set functions cache
+## the given matricies.
+makeCacheMatrix <- function(mat = matrix()) {
 
-makeCacheMatrix <- function(x = matrix()) {
-
+  inverseMat <- NULL
+  setMat <- function(newMat) {
+    mat <<- newMat
+    inverseMat <<- NULL
+  }
+  
+  getMat <- function() mat
+  
+  setInverseMat <- function(newInverseMat) {
+    inverseMat <<- newInverseMat
+  }
+  
+  getInverseMat <- function() inverseMat
+  
+  list(setMat = setMat,
+       getMat = getMat,
+       setInverseMat = setInverseMat,
+       getInverseMat = getInverseMat)
 }
 
-
-## Write a short comment describing this function
-
+## Takes a list of functions (created by makeCacheMatrix) and returns
+## the 'solved' (inverse) matrix.
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  
+  inverseMat <- x$getInverseMat()
+  if(!is.null(inverseMat)) {
+    message("getting cached data")
+    return(inverseMat)
+  }
+  
+  mat <- x$getMat()
+  
+  inverseMat <- solve(mat)
+  x$setInverseMat(inverseMat)
+  inverseMat
 }
